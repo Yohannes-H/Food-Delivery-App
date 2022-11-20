@@ -1,8 +1,29 @@
 import { View, Text, ScrollView } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import RestaurantCard from "./RestaurantCard";
-
+import sanityClient from "../sanity";
 const FeaturedRow = ({ id, title, description, featuredCategory }) => {
+  const [restaurants, setRestaurants] = useState([]);
+  useEffect(() => {
+    sanityClient
+      .fetch(
+        ` *[_type == "featured" && _id == $id]{
+        ...,
+        restaurants[]->{
+          ...,
+          dishes[]->,
+          type-> {
+            name
+          }
+        },
+      }[0]`,
+        { id }
+      )
+      .then((data) => {
+        setRestaurants(data?.restaurants);
+      });
+  }, []);
+
   return (
     <View>
       <View className="mt-4 flex-row items-center justify-between px-4">
@@ -21,43 +42,21 @@ const FeaturedRow = ({ id, title, description, featuredCategory }) => {
         className="pt-4"
       >
         {/* Restaurant Cards */}
-
-        <RestaurantCard
-          id={123}
-          imgUrl="https://www.thechunkychef.com/wp-content/uploads/2017/08/One-Pot-Chicken-Parmesan-Pasta-feat.jpg"
-          title="Italian Pasta!"
-          rating={4.5}
-          genre="Italian"
-          address="123 Main St"
-          short_description="this is a test description"
-          dishes={[]}
-          long={20}
-          lat={0}
-        />
-        <RestaurantCard
-          id={123}
-          imgUrl="https://www.thechunkychef.com/wp-content/uploads/2017/08/One-Pot-Chicken-Parmesan-Pasta-feat.jpg"
-          title="Italian Pasta!"
-          rating={4.5}
-          genre="Italian"
-          address="123 Main St"
-          short_description="this is a test description"
-          dishes={[]}
-          long={20}
-          lat={0}
-        />
-        <RestaurantCard
-          id={123}
-          imgUrl="https://www.thechunkychef.com/wp-content/uploads/2017/08/One-Pot-Chicken-Parmesan-Pasta-feat.jpg"
-          title="Italian Pasta!"
-          rating={4.5}
-          genre="Italian"
-          address="123 Main St"
-          short_description="this is a test description"
-          dishes={[]}
-          long={20}
-          lat={0}
-        />
+        {restaurants?.map((restaurant) => (
+          <RestaurantCard
+            key={restaurant._id}
+            id={restaurant._id}
+            imgUrl={restaurant.image}
+            title={restaurant.name}
+            rating={restaurant.rating}
+            genre={restaurant.type?.name}
+            address={restaurant.address}
+            short_description={restaurant.short_description}
+            dishes={restaurant.dishes}
+            long={restaurant.long}
+            lat={restaurant.lat}
+          />
+        ))}
       </ScrollView>
     </View>
   );
