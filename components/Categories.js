@@ -1,8 +1,20 @@
 import { View, Text, ScrollView } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import CategoryCard from "./CategoryCard";
-
+import sanityClient, { urlFor } from "../sanity";
 const Categories = () => {
+  const [categories, setCategories] = useState([]);
+  useEffect(() => {
+    sanityClient
+      .fetch(
+        `
+  *[_type == "category"]
+  `
+      )
+      .then((data) => {
+        setCategories(data);
+      });
+  }, []);
   return (
     <ScrollView
       contentContainerStyle={{
@@ -13,34 +25,14 @@ const Categories = () => {
       showsHorizontalScrollIndicator={false}
     >
       {/* Category Cards */}
-      <CategoryCard
-        imgUrl="https://ichef.bbci.co.uk/food/ic/food_16x9_832/recipes/black_and_blue_burger_95881_16x9.jpg"
-        title="Testing"
-      />
-      <CategoryCard
-        imgUrl="https://ichef.bbci.co.uk/food/ic/food_16x9_832/recipes/black_and_blue_burger_95881_16x9.jpg"
-        title="Testing"
-      />
-      <CategoryCard
-        imgUrl="https://ichef.bbci.co.uk/food/ic/food_16x9_832/recipes/black_and_blue_burger_95881_16x9.jpg"
-        title="Testing"
-      />
-      <CategoryCard
-        imgUrl="https://ichef.bbci.co.uk/food/ic/food_16x9_832/recipes/black_and_blue_burger_95881_16x9.jpg"
-        title="Testing"
-      />
-      <CategoryCard
-        imgUrl="https://ichef.bbci.co.uk/food/ic/food_16x9_832/recipes/black_and_blue_burger_95881_16x9.jpg"
-        title="Testing"
-      />
-      <CategoryCard
-        imgUrl="https://ichef.bbci.co.uk/food/ic/food_16x9_832/recipes/black_and_blue_burger_95881_16x9.jpg"
-        title="Testing"
-      />
-      <CategoryCard
-        imgUrl="https://ichef.bbci.co.uk/food/ic/food_16x9_832/recipes/black_and_blue_burger_95881_16x9.jpg"
-        title="Testing"
-      />
+
+      {categories?.map((category) => (
+        <CategoryCard
+          key={category._id}
+          imgUrl={urlFor(category.image).width(200).url()}
+          title={category.name}
+        />
+      ))}
     </ScrollView>
   );
 };
