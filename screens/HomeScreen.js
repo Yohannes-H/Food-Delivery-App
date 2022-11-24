@@ -43,7 +43,7 @@ const HomeScreen = () => {
       )
       .then((data) => {
         setFeaturedCategories(data);
-      }); // 1:46
+      });
   }, []);
   console.log(featuredCategories);
   return (
