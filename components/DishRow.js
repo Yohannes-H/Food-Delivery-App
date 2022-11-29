@@ -1,10 +1,20 @@
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import React, { useState } from "react";
 import { urlFor } from "../sanity";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addToBasket,
+  selectBasketItems,
+  selectBasketItemsWithId,
+} from "../features/basketSlice";
 
 const DishRow = ({ id, name, description, price, image }) => {
   const [isPressed, setIsPressed] = useState(false);
-
+  const dispatch = useDispatch();
+  const items = useSelector((state) => selectBasketItemsWithId(state, id));
+  const addItemToBasket = () => {
+    dispatch(addToBasket({ id, name, description, price, image }));
+  };
   return (
     <>
       <TouchableOpacity
@@ -39,9 +49,9 @@ const DishRow = ({ id, name, description, price, image }) => {
               <Text className="text-6xl">-</Text>
             </TouchableOpacity>
 
-            <Text className="text-3xl">0</Text>
+            <Text className="text-3xl">{items.length}</Text>
 
-            <TouchableOpacity>
+            <TouchableOpacity onPress={addItemToBasket}>
               <Text className="text-6xl">+</Text>
             </TouchableOpacity>
           </View>

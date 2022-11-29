@@ -22,7 +22,7 @@ const RestaurantScreen = () => {
   useLayoutEffect(() => {
     navigation.setOptions({ headerShown: false });
   }, []);
-  //2:25
+  //2:29
   return (
     <ScrollView>
       <View className="relative">
