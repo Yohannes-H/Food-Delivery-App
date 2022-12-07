@@ -10,7 +10,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { selectRestaurant } from "../features/restaurantSlice";
-import { removeFromBasket, selectBasketItems } from "../features/basketSlice";
+import {
+  removeFromBasket,
+  selectBasketItems,
+  selectBasketTotal,
+} from "../features/basketSlice";
 import { urlFor } from "../sanity";
 
 const BasketScreen = () => {
@@ -19,7 +23,7 @@ const BasketScreen = () => {
   const items = useSelector(selectBasketItems);
   const [groupedItemsInBasket, setGroupedItemsInBasket] = useState([]);
   const dispatch = useDispatch();
-
+  const basketTotal = useSelector(selectBasketTotal);
   useEffect(() => {
     const groupedItems = items.reduce((results, item) => {
       (results[item.id] = results[item.id] || []).push(item);
@@ -81,9 +85,33 @@ const BasketScreen = () => {
               </TouchableOpacity>
             </View>
           ))}
-
-          {/* 3:00:00 */}
         </ScrollView>
+
+        <View className="p-5 bg-white mt-5 space-y-4">
+          <View className="flex-row justify-between">
+            <Text className="text-gray-400">Subtotal</Text>
+            <Text className="text-gray-400">{basketTotal}</Text>
+          </View>
+          <View className="flex-row justify-between">
+            <Text className="text-gray-400">Delivery Fee</Text>
+            <Text className="text-gray-400">5.99</Text>
+          </View>
+          <View className="flex-row justify-between">
+            <Text>Order Total</Text>
+            <Text className="font-extrabold">{basketTotal + 5.99}</Text>
+          </View>
+
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("PrerparingOrderScreen");
+            }}
+            className="rounded-lg bg-[#00CCBB] p-4"
+          >
+            <Text className="text-center text-white text-lg font-bold">
+              Place Order
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );
